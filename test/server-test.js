@@ -14,15 +14,15 @@ describe('Server Test', function() {
         let start = Date.now();
         let u = `${url}/lookup?address=123+Fake+St`;
         request.get(u)
-        .end( (err, res) => {
+        .end( () => {
           let elapsed = Date.now() - start;
           debug('slow:',elapsed);
           expect(elapsed).to.be.above(100);
           start = Date.now();
-          request.get(u).end( (err, res) => {
+          request.get(u).end( () => {
             let elapsed = Date.now() - start;
             debug('fast:',elapsed);
-            expect(elapsed).to.be.below(50);
+            expect(elapsed).to.be.below(50); //Has been below 10
             done();
           });
         });
