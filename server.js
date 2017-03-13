@@ -7,7 +7,10 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 const LRU = require('./lru-cache.js');
-const lru = new LRU();
+const lru = new LRU({
+  max: 50000,
+  trim: 45000
+});
 
 const lookup = require('./sales-tax-lookup.js');
 
