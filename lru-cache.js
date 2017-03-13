@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('gws:lru-cache');
+// const debug = require('debug')('gws:lru-cache');
 
 const MAX_SIZE = 50000;
 const TRIM_SIZE = 40000; // TODO: What is the optimal cache size after purge?
@@ -20,12 +20,12 @@ LRU.prototype.get = function(key) {
     return item.value;
   }
   return null;
-}
+};
 
 LRU.prototype.set = function(key, value) {
 
   if(this.lookup[key]) {
-    debug('set(), updating time',key);
+    // debug('set(), updating time',key);
     return this.lookup[key].t = Date.now();
   }
 
@@ -41,10 +41,10 @@ LRU.prototype.set = function(key, value) {
 
   this.lookup[key] = item;
   this.items.push(item); //Only sort when needed.
-}
+};
 
 function purge() {
-  debug('purge()');
+  // debug('purge()');
   // Sorting is somewhat expensive, so we only want to purge sometimes.
   this.items.sort(function(a,b) {
     if(a.t > b.t) return -1;
