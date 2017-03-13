@@ -1,0 +1,22 @@
+{
+  "name": "sales-tax-lookup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "DEBUG='gws*' mocha",
+    "start": "DEBUG='gws*' node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "superagent": "^3.5.0"
+  },
+  "dependencies": {
+    "debug": "^2.6.2",
+    "express": "^4.15.2"
+  }
+}
