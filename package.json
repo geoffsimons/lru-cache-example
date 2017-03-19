@@ -16,6 +16,7 @@
     "superagent": "^3.5.0"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "debug": "^2.6.2",
     "express": "^4.15.2"
   }
