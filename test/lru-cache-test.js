@@ -23,6 +23,9 @@ describe('LRU Cache', function() {
 
         // for(let i = 0; i < 24; i++) lru.set(i, items[i]);
 
+        //TODO: No need to delay the calls. The new alg
+        //      no longer depends on time.
+
         let i = 0;
         function addItem() {
           lru.set(i, items[i]);
