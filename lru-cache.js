@@ -33,9 +33,6 @@ LRU.prototype.get = function(key) {
 LRU.prototype.set = function(key, val) {
   debug('set()',key,val, typeof key);
   let node = this.lookup[key];
-  // debug('NODE:',node);
-  // debug('lookup:',this.lookup);
-
   if(node) {
     debug('found:',node);
     moveToHead.call(this, node);
@@ -48,15 +45,11 @@ LRU.prototype.set = function(key, val) {
   if(this.size === this.max) {
     // Remove the tail.
     let tail = this.tail;
-    //TODO: Why is tail.prev sometimes null here?
-    // If size is 1, then tail.prev should be null.
     let prev = tail.prev;
     if(prev) {
       prev.next = null; //Would have been === tail, otherwise.
       this.tail = prev;
     }
-    // tail.prev.next = null;
-    // this.tail = tail.prev;
     this.size--;
     delete this.lookup[tail.key];
   }
