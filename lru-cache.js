@@ -1,63 +1,92 @@
 'use strict';
 
-// const debug = require('debug')('gws:lru-cache');
-
 const MAX_SIZE = 50000;
-const TRIM_SIZE = 40000; // TODO: What is the optimal cache size after purge?
+
+// const debug = require('debug')('gws:lru-cache');
+const debug = function() {};
+
+function Node(key, val) {
+  this.key = key;
+  this.val = val;
+  this.prev = null;
+  this.next = null;
+}
 
 const LRU = module.exports = function(params) {
   params = params || {};
   this.max = params.max || MAX_SIZE;
-  this.trim = params.trim || TRIM_SIZE;
-  this.items = [];
   this.lookup = {};
+  this.head = null;
+  this.tail = null;
+  this.size = 0;
 };
 
 LRU.prototype.get = function(key) {
-  let item = this.lookup[key];
-  if(item) {
-    item.t = Date.now(); //Update cache time
-    return item.value;
-  }
-  return null;
+  debug('get()',key, typeof key);
+  let node = this.lookup[key];
+  if(!node) return null;
+  //Move node to the head.
+  moveToHead.call(this, node);
+  return node.val;
 };
 
-LRU.prototype.set = function(key, value) {
+LRU.prototype.set = function(key, val) {
+  debug('set()',key,val, typeof key);
+  let node = this.lookup[key];
+  // debug('NODE:',node);
+  // debug('lookup:',this.lookup);
 
-  if(this.lookup[key]) {
-    // debug('set(), updating time',key);
-    return this.lookup[key].t = Date.now();
+  if(node) {
+    debug('found:',node);
+    moveToHead.call(this, node);
+    return node.val;
   }
 
-  if(this.items.length === this.max) purge.call(this);
+  node = new Node(key, val);
 
-  let item = {
-    key: key,
-    value: value,
-    t: Date.now()
-  };
+  //Cache miss and no more room. Need to purge an item.
+  if(this.size === this.max) {
+    // Remove the tail.
+    let tail = this.tail;
+    //TODO: Why is tail.prev sometimes null here?
+    // If size is 1, then tail.prev should be null.
+    let prev = tail.prev;
+    if(prev) {
+      prev.next = null; //Would have been === tail, otherwise.
+      this.tail = prev;
+    }
+    // tail.prev.next = null;
+    // this.tail = tail.prev;
+    this.size--;
+    delete this.lookup[tail.key];
+  }
 
-  // debug('set(), adding new item',key);
+  this.lookup[key] = node;
+  this.size++;
 
-  this.lookup[key] = item;
-  this.items.push(item); //Only sort when needed.
+  if(!this.head) {
+    this.head = node;
+    this.tail = node;
+    return;
+  }
+
+  node.next = this.head;
+  this.head.prev = node;
+  this.head = node;
 };
 
-function purge() {
-  // debug('purge()');
-  // Sorting is somewhat expensive, so we only want to purge sometimes.
-  this.items.sort(function(a,b) {
-    if(a.t > b.t) return -1;
-    if(b.t > a.t) return 1;
-    return 0;
-  });
+function moveToHead(node) {
+  debug('moveToHead()',node);
+  if(!node.prev) return node.val; //Node is already the head.
 
-  let num = this.max - this.trim;
-  // if(num > items.length) num = items.length; // Impossible?
-
-  while(num > 0) {
-    let item = this.items.pop();
-    delete this.lookup[item.key];
-    num--;
+  let prev = node.prev;
+  prev.next = node.next;
+  if(node.next) {
+    node.next.prev = prev;
   }
+  else {
+    //node was the tail.
+    this.tail = prev;
+  }
+  this.head = node;
 }
