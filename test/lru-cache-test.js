@@ -17,15 +17,24 @@ describe('LRU Cache', function() {
 
     describe('after series of set calls', () => {
       it('oldest items should be purged', done => {
-        let lru = new LRU({ max: 20, trim: 16 });
+        let lru = new LRU({ max: 20 });
         let items = [];
         for(let i = 0; i < 40; i++) items.push(i);
 
         // for(let i = 0; i < 24; i++) lru.set(i, items[i]);
 
+        //TODO: No need to delay the calls. The new alg
+        //      no longer depends on time.
+
         let i = 0;
         function addItem() {
           lru.set(i, items[i]);
+          // console.log('--------------------------');
+          // console.log('HEAD:',lru.head.val);
+          // console.log('TAIL:',lru.tail.val);
+          // let keys = Object.keys(lru.lookup);
+          // console.log('SIZE:',lru.size,keys.length);
+          // console.log(keys);
           i++;
           if(i < 24) return setTimeout(function() {
             addItem();
@@ -35,6 +44,7 @@ describe('LRU Cache', function() {
 
         function testResult() {
           // console.log(lru.items);
+          // console.log(lru.lookup);
 
           expect(lru.get(1)).to.equal(null); // 0,1,2,3 should all have been purged.
 

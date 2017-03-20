@@ -1,5 +1,6 @@
 'use strict';
 
+const Promise = require('bluebird');
 const request = require('superagent');
 const debug = require('debug')('gws:mock-users');
 
@@ -34,8 +35,7 @@ module.exports = function(num, done, listener) {
     i++;
     n++;
 
-    // let addr = addresses.get();
-    let addr = addresses.round();
+    let addr = addresses.get();
     let start = Date.now();
     return makeRequest(addr)
     .then( () => {
@@ -45,16 +45,18 @@ module.exports = function(num, done, listener) {
           addr: addr
         });
       }
+    })
+    .catch( err => {
+      debug(err);
+    })
+    .finally( () => {
       n--;
       if(i < num) return work();
       if(n === 0) {
         debug('all done mock-users');
         done();
       }
-      // else {
-      //   debug('waiting for ',n,' requests');
-      // }
-    }); // .catch()?
+    });
   }
   for(let i = 0; i < 50; i++) work();
 };

@@ -1,7 +1,6 @@
 'use strict';
 
 const expect = require('chai').expect;
-// const request = require('superagent');
 const debug = require('debug')('gws:load-test');
 
 // const server = require('../server.js');
@@ -14,15 +13,13 @@ describe('Load Test', function() {
   this.timeout(0);
   describe('after many requests', () => {
     before( done => {
-      // mockUsers(50, done);
       let numHits = 0;
       let numCalls = 0;
       let numPop = 0;
-      mockUsers(100000, done, function(e) {
+      mockUsers(66700, done, function(e) {
         if(e.t < 100) numHits++;
         numCalls++;
         if(e.addr.length < 11) numPop++;
-        // debug('call:',numCalls,e.addr,e.addr.length);
         if(numCalls % 1000 === 0) debug('calls:',numCalls,'pop:',numPop,'hit:',numHits);
       });
     });
@@ -47,11 +44,11 @@ describe('Load Test', function() {
         debug('miss:',numMiss,missTime,missTime/numMiss);
         debug('buckets:',buckets);
 
-        expect(hitRate).to.be.above(0.35);
+        expect(hitRate).to.be.above(0.5);
 
         done();
       }
-      mockUsers(20000, finish, function(e) {
+      mockUsers(50000, finish, function(e) {
         totalTime += e.t;
 
         let bi = Math.floor(e.t / bw);
